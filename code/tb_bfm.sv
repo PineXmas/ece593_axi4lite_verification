@@ -6,10 +6,10 @@ This interface define the BFM used in our testbench
 
 import tb_pkg::*;
 
-interface axi_tb_bfm;
+interface tb_bfm;
 
     // **************************************************
-    // DECLARATIONS
+    // VARIABLES
     // **************************************************
     
     // clocks & reset
@@ -17,9 +17,15 @@ interface axi_tb_bfm;
     logic rst;
     
     // AXI4-Lite
-    axi_lite_if axi_if;
     logic master_start_read;
     logic master_start_write;
+
+    // **************************************************
+    // INSTANCES
+    // **************************************************
+
+    // AXI4-Lite interface
+    axi_lite_if axi_if();
     
     // **************************************************
     // LOGIC
