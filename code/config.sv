@@ -1,4 +1,6 @@
 /* Config to pass to generator */
+import agent_pkg::*;
+
 class generator_config;
    rand int   total_trx;				//Number of Transactions
    rand operation  trx_type_selected;	//Type of Transaction selection
