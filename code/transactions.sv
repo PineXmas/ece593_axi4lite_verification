@@ -1,6 +1,9 @@
 //Class for write operation during write transaction
+import agent_pkg::*;
+
 class pkt_write;
-	rand 	bit  start_write;
+	rand 	bit  		start_write;
+	rand	bit			start_read;
 	rand	bit  [31:0]	addr;
 	rand	bit  [31:0]	data;				 
 
@@ -16,8 +19,9 @@ endclass
 
 //Class for read operation during read transaction
 class pkt_read;
-	rand	bit	start_read;
-	rand	bit	[31:0]	 addr;	     
+	rand	bit			start_write;
+	rand	bit			start_read;
+	rand	bit	[31:0]	addr;	     
 
 	constraint araddr_c{		//****
 		addr >  32'h5ff;			
@@ -47,3 +51,15 @@ class pkt_read_resp;
 		$display("Master Received Read Response from Slave:: rdata = %b, rresp = %b", rdata, rresp);
 	endfunction
 endclass
+	
+/*	
+//Class for axi write
+class pkt_write_internal;
+	bit [31:0]  awaddr;
+	bit [31:0]	wdata;
+   
+	function void wr_intrl_display();
+		$display("Master sending out data to Slave:: awaddr = %h, wdata = %h", awaddr, wdata);
+	endfunction	
+endclass
+*/
