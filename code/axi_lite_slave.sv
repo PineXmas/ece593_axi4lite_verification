@@ -17,6 +17,7 @@ module axi_lite_slave (
 
 	// R
 	assign s_axi_lite.rdata  = (state == RDATA) ? buffer[addr] : 0;
+//	$display("buffer data: %h",buffer[addr]);
 	assign s_axi_lite.rresp  = RESP_OKAY;
 	assign s_axi_lite.rvalid = (state == RDATA) ? 1 : 0;
 
@@ -49,7 +50,7 @@ module axi_lite_slave (
 				buffer[i] <= 32'h0;
 			end
 		end else begin
-			if (state == WDATA) buffer[addr] <= s_axi_lite.wdata;
+			if ((state == WDATA) | (state == WADDR)) buffer[addr] <= s_axi_lite.wdata;
 		end
 	end
 
