@@ -24,7 +24,7 @@ function new(mailbox mbRd, mbWr, mon_sbRd, mon_sbWr);
 	this.monitor2sboard_wr_h	= mon_sbWr;
 	this.monitor2sboard_rd_h   	= mon_sbRd;
 	foreach(sb_mem_buffer[i])
-		sb_mem_buffer = '0;
+		sb_mem_buffer[i] = '0;
 endfunction
 
 task run();
@@ -47,8 +47,11 @@ task agent2sboard_wr_pkt();										//Task to collect the write packets from th
 			->wr_t;				
 			write_count += 1;
 		end
-		if(monitor::done_sig == 1) 
-			break;
+
+		// // check end of write
+		// if(monitor::done_sig == 1) 
+		// 	break;
+
 		#1;
 	end
 endtask
@@ -64,8 +67,11 @@ task agent2sboard_rd_pkt();										//Task to collect the read packets from the
 			->rd_t;
 			read_count += 1;
 		end
-		if(monitor::done_sig == 1)
-			break;
+
+		// // check end of read
+		// if(monitor::done_sig == 1)
+		// 	break;
+
 		#1;
 	end
 endtask
@@ -97,8 +103,11 @@ task monitor2sboard_wr_pkt();									//Task to collect write response packets a
 				error_count += 1;
 			end
 		end
-		if(monitor::done_sig == 1)
-			break;
+
+		// // check end of write
+		// if(monitor::done_sig == 1)
+		// 	break;
+
 		#1;
 	end
 endtask
@@ -118,28 +127,36 @@ task monitor2sboard_rd_pkt();													//Task to collect read response packet
 				begin
 					if(rd_resp_h.rdata != sb_mem_buffer[rd_temp_h.addr])				//Check to make sure data written to the address by the master is the same as the data provided to the master by the slave on read 
 					begin
-						$display("Error in read transaction, addr: %h \t data: %h",rd_temp_h.addr,rd_temp_h.data);		//If mismatch in data error
+
+						// // compare read data with the data EXPECTED to see in the origin read transaction
+						// $display("Error in read transaction, addr: %h \t data: %h",rd_temp_h.addr,rd_temp_h.data);		//If mismatch in data error
 						error_count += 1;
 					end
 					else
 					begin
-						$display("Right data read, addr: %h \t data: %h",rd_temp_h.addr,rd_temp_h.data);
+						// // compare read data with the data EXPECTED to see in the origin read transaction
+						// $display("Right data read, addr: %h \t data: %h",rd_temp_h.addr,rd_temp_h.data);
 					end
 				end
 				else
 				begin
-					$display("Error in read transaction, addr: %h \t data: %h \n",rd_temp_h.addr,rd_temp_h.data);		//Error pops up if invalid address
+					// //Error pops up if invalid address
+					// $display("Error in read transaction, addr: %h \t data: %h \n",rd_temp_h.addr,rd_temp_h.data);		
 					error_count += 1;
 				end
 			end
 			else
 			begin
-				$display("Error in read transaction, addr: %h \t data: %h \n",rd_temp_h.addr,rd_temp_h.data);			//Error pops up if invalid read transaction
+				// //Error pops up if invalid read transaction
+				// $display("Error in read transaction, addr: %h \t data: %h \n",rd_temp_h.addr,rd_temp_h.data);			
 				error_count += 1;
 			end
 		end
-		if(monitor::done_sig == 1)
-			break;
+
+		// // check end of read
+		// if(monitor::done_sig == 1)
+		// 	break;
+
 		#1;
 	end
 endtask

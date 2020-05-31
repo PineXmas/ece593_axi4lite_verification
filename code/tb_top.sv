@@ -1,6 +1,8 @@
 
 program tb_top(bfm bfm_if, axi_lite_if axi_if);
-environment env;
+
+// // define environment
+// environment env;
 
 covergroup axi_cover @(posedge bfm_if.clock);
 cp_reset: coverpoint bfm_if.reset;
@@ -49,9 +51,9 @@ axi_cover a_cov; //Instantiating covergroup
 initial 
 begin
 	a_cov = new();
-	env.build();
-	env.run();
-	env.stat();
+	// env.build();
+	// env.run();
+	// env.stat();
 	$display("Coverage acquired = %0.2f %%",a_cov.get_inst_coverage());
 end
 endprogram
