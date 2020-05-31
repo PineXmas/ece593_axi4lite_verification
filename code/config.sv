@@ -4,7 +4,7 @@ import agent_pkg::*;
 class generator_config;
    rand int   total_trx;				//Number of Transactions
    rand operation  trx_type_selected;	//Type of Transaction selection
-   rand bit   pkt_selction; 			//Selecting of READ or WRITE when interleaving transaction
+   rand bit   pkt_selection; 			//Selecting of READ or WRITE when interleaving transaction
    rand bit [31:0] addr;
 
    constraint addr_range_c{			//*****Check addr range*****//

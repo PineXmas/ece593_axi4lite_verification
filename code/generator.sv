@@ -1,4 +1,5 @@
 import agent_pkg::*;
+`include "config.sv";
 
 class generator;
 
@@ -92,19 +93,22 @@ class generator;
 		assert(g_config.randomize() with {trx_type_selected == WRITE;})				//Runs continious write transactions
 		else
 			$error("Configuration randomization failed on Write Transaction");
-		$display("Total Transaction: %d \t Read: %d \t Write: %d",g_config.total_trx,g_config.start_read,g_config.start_write);
+
+		// $display("Total Transaction: %d \t Read: %d \t Write: %d",g_config.total_trx,g_config.start_read,g_config.start_write);
 		generator2agent(g_config);
 		
 		assert(g_config.randomize() with {trx_type_selected == READ;})				//Runs continious read transactions
 		else
 			$error("Configuration randomization failed on Read Transaction");
-		$display("Total Transaction: %d \t Read: %d \t Write: %d",g_config.total_trx,g_config.start_read,g_config.start_write);
+
+		// $display("Total Transaction: %d \t Read: %d \t Write: %d",g_config.total_trx,g_config.start_read,g_config.start_write);
 		generator2agent(g_config);
 		
 		assert(g_config.randomize() with {trx_type_selected == BOTH;})				//Runs both read and write
 		else
 			$error("Configuration randomization failed on Write Transaction");
-		$display("Total Transaction: %d \t Read: %d \t Write: %d",g_config.total_trx,g_config.start_read,g_config.start_write);
+
+		// $display("Total Transaction: %d \t Read: %d \t Write: %d",g_config.total_trx,g_config.start_read,g_config.start_write);
 		generator2agent(g_config);
 		
 		

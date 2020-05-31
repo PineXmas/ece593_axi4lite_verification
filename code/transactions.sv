@@ -12,7 +12,7 @@ class pkt_write;
 		addr <= 32'hfff;
 	}
    
-	function void Wdisplay();
+	function void display();
 		$display("Write Request from Master:: addr = %b, data = %b", addr, data);
 	endfunction
 endclass
@@ -28,7 +28,7 @@ class pkt_read;
 		addr <= 32'hfff;
 	}
 
-	function void Rdisplay();
+	function void display();
 		$display("Read request from Master:: addr = %b", addr);
 	endfunction
 endclass
