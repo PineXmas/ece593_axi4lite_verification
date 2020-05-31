@@ -39,3 +39,9 @@ coverage:
     - check on DUT for the right moments to sample for the coverage
     - repeat
     - (optional: check for stop executing if receive STOP from monitor)
+
+**************************************************
+
+Fix:
+
+- DUT, slave: read the data into buffer in the state "WDATA" only. If read in state "WADDR" => the new address/data is not updated yet ==> the wrong data (wvalid is not adderted yet) or wrong address (new address is only guaranteed to be updated at the end of WADDR cycle)
