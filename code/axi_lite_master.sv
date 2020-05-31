@@ -15,8 +15,6 @@ module axi_lite_master#(
 	typedef enum logic [2 : 0] {IDLE, RADDR, RDATA, WADDR, WDATA, WRESP} state_type;
 	state_type state, next_state;
 
-//	addr_t addr = ADDR;
-//	data_t data = 32'hdeadbeef, rdata;
 	data_t rdata;
 	logic start_read_delay, start_write_delay;
 
