@@ -76,90 +76,90 @@ task agent2sboard_rd_pkt();										//Task to collect the read packets from the
 	end
 endtask
 
-task monitor2sboard_wr_pkt();									//Task to collect write response packets and store the data of the address.
-	forever
-	begin
-		pkt_write_resp 	wr_resp_h;
-		void'(monitor2sboard_wr_h.try_get(wr_resp_h));
-		if(wr_resp_h != null)
-		begin
-			if(wr_resp_h.bresp == 0)
-			begin
-				wait(wr_t.triggered);
-				wr_temp_h = pkt_wr_que_h[$];
-				if((wr_temp_h.start_write == 1) && (wr_temp_h.start_read == 0))			// Condition to store data in scoreboard buffer memory
-				begin
-					sb_mem_buffer[wr_temp_h.addr] = wr_temp_h.data;						//store data in scoreboard buffer memory
-				end
-				else
-				begin
-					$display("Error in write transaction, addr: %h \t data: %h \n",wr_temp_h.addr,wr_temp_h.data);	//Error pops up if invalid address
-					error_count += 1;
-				end
-			end
-			else
-			begin
-				$display("Error in write transaction, addr: %h \t data: %h \n",wr_temp_h.addr,wr_temp_h.data);		//Error pops up if invalid write transaction
-				error_count += 1;
-			end
-		end
+// task monitor2sboard_wr_pkt();									//Task to collect write response packets and store the data of the address.
+// 	forever
+// 	begin
+// 		pkt_write_resp 	wr_resp_h;
+// 		void'(monitor2sboard_wr_h.try_get(wr_resp_h));
+// 		if(wr_resp_h != null)
+// 		begin
+// 			if(wr_resp_h.bresp == 0)
+// 			begin
+// 				wait(wr_t.triggered);
+// 				wr_temp_h = pkt_wr_que_h[$];
+// 				if((wr_temp_h.start_write == 1) && (wr_temp_h.start_read == 0))			// Condition to store data in scoreboard buffer memory
+// 				begin
+// 					sb_mem_buffer[wr_temp_h.addr] = wr_temp_h.data;						//store data in scoreboard buffer memory
+// 				end
+// 				else
+// 				begin
+// 					$display("Error in write transaction, addr: %h \t data: %h \n",wr_temp_h.addr,wr_temp_h.data);	//Error pops up if invalid address
+// 					error_count += 1;
+// 				end
+// 			end
+// 			else
+// 			begin
+// 				$display("Error in write transaction, addr: %h \t data: %h \n",wr_temp_h.addr,wr_temp_h.data);		//Error pops up if invalid write transaction
+// 				error_count += 1;
+// 			end
+// 		end
 
-		// // check end of write
-		// if(monitor::done_sig == 1)
-		// 	break;
+// 		// // check end of write
+// 		// if(monitor::done_sig == 1)
+// 		// 	break;
 
-		#1;
-	end
-endtask
+// 		#1;
+// 	end
+// endtask
 	
-task monitor2sboard_rd_pkt();													//Task to collect read response packets and store the data of the address.
-	forever
-	begin
-		pkt_read_resp 	rd_resp_h;
-		void'(monitor2sboard_rd_h.try_get(rd_resp_h));
-		if(rd_resp_h != null)
-		begin
-			if(rd_resp_h.rresp == 0)
-			begin
-				wait(rd_t.triggered);
-				rd_temp_h = pkt_rd_que_h[$];
-				if(rd_temp_h.start_read)												// Condition to read data form scoreboard buffer memory
-				begin
-					if(rd_resp_h.rdata != sb_mem_buffer[rd_temp_h.addr])				//Check to make sure data written to the address by the master is the same as the data provided to the master by the slave on read 
-					begin
+// task monitor2sboard_rd_pkt();													//Task to collect read response packets and store the data of the address.
+// 	forever
+// 	begin
+// 		pkt_read_resp 	rd_resp_h;
+// 		void'(monitor2sboard_rd_h.try_get(rd_resp_h));
+// 		if(rd_resp_h != null)
+// 		begin
+// 			if(rd_resp_h.rresp == 0)
+// 			begin
+// 				wait(rd_t.triggered);
+// 				rd_temp_h = pkt_rd_que_h[$];
+// 				if(rd_temp_h.start_read)												// Condition to read data form scoreboard buffer memory
+// 				begin
+// 					if(rd_resp_h.rdata != sb_mem_buffer[rd_temp_h.addr])				//Check to make sure data written to the address by the master is the same as the data provided to the master by the slave on read 
+// 					begin
 
-						// // compare read data with the data EXPECTED to see in the origin read transaction
-						// $display("Error in read transaction, addr: %h \t data: %h",rd_temp_h.addr,rd_temp_h.data);		//If mismatch in data error
-						error_count += 1;
-					end
-					else
-					begin
-						// // compare read data with the data EXPECTED to see in the origin read transaction
-						// $display("Right data read, addr: %h \t data: %h",rd_temp_h.addr,rd_temp_h.data);
-					end
-				end
-				else
-				begin
-					// //Error pops up if invalid address
-					// $display("Error in read transaction, addr: %h \t data: %h \n",rd_temp_h.addr,rd_temp_h.data);		
-					error_count += 1;
-				end
-			end
-			else
-			begin
-				// //Error pops up if invalid read transaction
-				// $display("Error in read transaction, addr: %h \t data: %h \n",rd_temp_h.addr,rd_temp_h.data);			
-				error_count += 1;
-			end
-		end
+// 						// // compare read data with the data EXPECTED to see in the origin read transaction
+// 						// $display("Error in read transaction, addr: %h \t data: %h",rd_temp_h.addr,rd_temp_h.data);		//If mismatch in data error
+// 						error_count += 1;
+// 					end
+// 					else
+// 					begin
+// 						// // compare read data with the data EXPECTED to see in the origin read transaction
+// 						// $display("Right data read, addr: %h \t data: %h",rd_temp_h.addr,rd_temp_h.data);
+// 					end
+// 				end
+// 				else
+// 				begin
+// 					// //Error pops up if invalid address
+// 					// $display("Error in read transaction, addr: %h \t data: %h \n",rd_temp_h.addr,rd_temp_h.data);		
+// 					error_count += 1;
+// 				end
+// 			end
+// 			else
+// 			begin
+// 				// //Error pops up if invalid read transaction
+// 				// $display("Error in read transaction, addr: %h \t data: %h \n",rd_temp_h.addr,rd_temp_h.data);			
+// 				error_count += 1;
+// 			end
+// 		end
 
-		// // check end of read
-		// if(monitor::done_sig == 1)
-		// 	break;
+// 		// // check end of read
+// 		// if(monitor::done_sig == 1)
+// 		// 	break;
 
-		#1;
-	end
-endtask
+// 		#1;
+// 	end
+// endtask
 	
 task stats();
 	if(error_count)

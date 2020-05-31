@@ -3,9 +3,18 @@ monitor:
     - mailbox hub
     - distribute mails to components
     - keep track of the current state of the whole system to send reacting messages to responsible components
+    
+    Behaviors:
+    - wait for STIMULUS_READY_READ/WRITE from driver
+    - send the received message (STIMULUS_READY_READ/WRITE) to:
+        + driver
+        + checker
+        + scoreboard
+    - wait for DONE_CHECKING from checker
+    - repeat
 
 generator:
-    - wait for DONE_ONE_TEST from monitor
+    - wait for DONE_CHECKING from monitor
     - generate next stimulus
     - send STIMULUS_READY_READ/WRITE to monitor
     - repeat
@@ -20,7 +29,7 @@ checker:
     - wait for STIMULUS_READY_READ/WRITE from monitor
     - check on DUT for finish condition, corresponding to the type of the current transaction
     - send EXPECTED_REQUEST to scoreboard
-    - wait for EXPECTED_RECEIVE from scoreboard
+    - wait for EXPECTED_REPLY from scoreboard
     - compare results & log
     - send DONE_CHECKING to monitor
     - repeat
@@ -30,7 +39,7 @@ scoreboard:
     - wait for STIMULUS_READY_READ/WRITE from monitor
     - record/generate/retrieve corresponding expected results
     - wait for EXPECTED_REQUEST from checker
-    - send EXPECTED_RECEIVE with expected result attached back to checker
+    - send EXPECTED_REPLY with attached expected result back to checker
     - repeat
     - (optional: check for stop executing if receive STOP from monitor)
 

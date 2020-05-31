@@ -1,10 +1,17 @@
-`timescale 1ns / 1ps
-
 /*
-This interface define the BFM used in our testbench
+
+**************************************************
+ECE593 - Fundamentals of Pre-Silicon Verification
+Project 7
+Team: Shubhanka, Supraj & Thong
+**************************************************
+
+This interface defines the BFM used in our testbench
+
 */
 
 import tb_pkg::*;
+import axi_lite_pkg::*;
 
 interface tb_bfm;
 
@@ -13,12 +20,16 @@ interface tb_bfm;
     // **************************************************
     
     // clocks & reset
-    logic clk;
-    logic rst;
+    logic aclk;
+    logic areset_n;
     
-    // AXI4-Lite
-    logic master_start_read;
-    logic master_start_write;
+    // start signal for master
+    logic start_read;
+    logic start_write;
+
+    // input address & data for master
+    addr_t addr;
+    data_t data;
 
     // **************************************************
     // INSTANCES
@@ -33,10 +44,10 @@ interface tb_bfm;
     
     // clock
     initial begin
-        clk = 0;
+        aclk = 0;
         forever begin
             #CLOCK_WIDTH;
-            clk = ~clk;
+            aclk = ~aclk;
         end
     end
 

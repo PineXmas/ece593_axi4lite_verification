@@ -1,59 +1,50 @@
+/*
 
-program tb_top(bfm bfm_if, axi_lite_if axi_if);
+**************************************************
+ECE593 - Fundamentals of Pre-Silicon Verification
+Project 7
+Team: Shubhanka, Supraj & Thong
+**************************************************
 
-// // define environment
-// environment env;
+This file defines the top module for our AXI4-Lite verification testbench
 
-covergroup axi_cover @(posedge bfm_if.clock);
-cp_reset: coverpoint bfm_if.reset;
+*/
 
-//Handshaking signals coverpoints
-cp_read_valid: coverpoint axi_if.rvalid;  
+module tb_top;
+    
+    // **************************************************
+    // INSTANCES
+    // **************************************************
 
-cp_write_valid: coverpoint axi_if.wvalid;
+    // BFM
+    tb_bfm bfm();
 
-cp_bvalid: coverpoint axi_if.bvalid;
+    // DUT
+    axi_lite_dut dut(
+        .aclk(bfm.aclk),
+        .areset_n(bfm.areset_n),
+        .start_read(bfm.start_read),
+        .start_write(bfm.start_write),
+        .addr(bfm.addr),
+        .data(bfm.data),
+        .axi_if(bfm.axi_if)
+    );
 
-cp_rready: coverpoint axi_if.rready;  
+    // Testbench
 
-cp_bready: coverpoint axi_if.bready;  
 
-cp_start_read: coverpoint bfm_if.start_read;
+    // **************************************************
+    // LOGIC
+    // **************************************************
 
-cp_start_write: coverpoint bfm_if.start_write;
+    initial 
+    begin
+        // env new
 
-cp_read_resp: coverpoint axi_if.rresp;
+        // env build
 
-cp_write_resp: coverpoint axi_if.bresp;
+        // env run
 
-// read coverpoints
-cp_read_address: coverpoint axi_if.araddr{
-											bins readaddr[] = {[0:31]};
-										  }
-
-cp_read_data: coverpoint axi_if.rdata{
-										bins readdata[] = {[0:31]};
-									 }
-
-// write cover points
-cp_write_address: coverpoint axi_if.awaddr{
-											bins writeaddr[] = {[0:31]};
-										  }
-
-cp_write_data: coverpoint axi_if.wdata{
-										bins writedata[] = {[0:31]};
-									  }
-
-endgroup
-      
-axi_cover a_cov; //Instantiating covergroup
-	
-initial 
-begin
-	a_cov = new();
-	// env.build();
-	// env.run();
-	// env.stat();
-	$display("Coverage acquired = %0.2f %%",a_cov.get_inst_coverage());
-end
-endprogram
+        $stop();
+    end
+endmodule
