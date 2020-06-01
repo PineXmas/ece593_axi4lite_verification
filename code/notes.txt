@@ -11,6 +11,7 @@ monitor:
         + checker
         + scoreboard
     - wait for DONE_CHECKING from checker
+    - send DONE_CHECKING to generator
     - repeat
 
 generator:
@@ -28,8 +29,8 @@ driver:
 checker:
     - wait for STIMULUS_READY_READ/WRITE from monitor
     - check on DUT for finish condition, corresponding to the type of the current transaction
-    - send EXPECTED_REQUEST to scoreboard
-    - wait for EXPECTED_REPLY from scoreboard
+    - send EXPECTED_REQUEST to scoreboard (via monitor)
+    - wait for EXPECTED_REPLY from scoreboard (via monitor)
     - compare results & log
     - send DONE_CHECKING to monitor
     - repeat
@@ -38,8 +39,8 @@ checker:
 scoreboard:
     - wait for STIMULUS_READY_READ/WRITE from monitor
     - record/generate/retrieve corresponding expected results
-    - wait for EXPECTED_REQUEST from checker
-    - send EXPECTED_REPLY with attached expected result back to checker
+    - wait for EXPECTED_REQUEST from checker (via monitor)
+    - send EXPECTED_REPLY with attached expected result back to checker (via monitor)
     - repeat
     - (optional: check for stop executing if receive STOP from monitor)
 

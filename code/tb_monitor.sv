@@ -68,9 +68,17 @@ class tb_monitor;
 
             // wait for STIMULUS_READY_READ/WRITE from generator
             $display("[Monitor] wait for stimulus from generator");
-            generator2monitor.get(msg);
-            $display("Generator -> Monitor");
-            msg.display();
+            while (1) begin
+                generator2monitor.get(msg);
+                $display("Generator -> Monitor");
+                msg.display();
+
+                if (msg.msg_type == MSG_STIMULUS_READY_READ
+                    || msg.msg_type == MSG_STIMULUS_READY_WRITE
+                ) begin
+                    break;
+                end
+            end
             
             // send the transaction to driver, checker & scoreboard
             $display("[Monitor] send to driver");
@@ -79,6 +87,21 @@ class tb_monitor;
             monitor2checker.put(msg);
             $display("[Monitor] send to scoreboard");
             monitor2scoreboard.put(msg);
+
+            // wait for DONE_CHECKING from checker
+
+            // NOT TESTED YET
+
+            $display("[Monitor] wait for checking done");
+            while (1) begin
+                checker2monitor.get(msg);
+                $display("Checker -> Monitor");
+                msg.display();
+
+                if (msg.msg_type == MSG_DONE_CHECKING) begin
+                    break;
+                end
+            end
 
             count += 1;
             if (count >= 3) begin
