@@ -17,14 +17,18 @@ package tb_pkg;
     parameter CLOCK_CYCLE = 10;
     parameter CLOCK_WIDTH = CLOCK_CYCLE / 2;
 
+    // write transaction (RANDOM)
+    parameter AWADDR_RAND_MIN = 32'h5FF;
+    parameter AWADDR_RAND_MAX = 32'hFFF;
+
     // type of messages exchanged between the components (via the mailbox)
     typedef enum {
-        NOT_DEFINED,                // not-defined message, used for debugging
-        STIMULUS_READY_READ,        // a read transaction is ready
-        STIMULUS_READY_WRITE,       // a write transaction is ready
-        EXPECTED_REQUEST,           // request expected result
-        EXPECTED_REPLY,             // reply with expected result
-        DONE_CHECKING               // checker has done checking
+        MSG_UNKNOWN,                    // not-defined message, used for debugging
+        MSG_STIMULUS_READY_READ,        // a read transaction is ready
+        MSG_STIMULUS_READY_WRITE,       // a write transaction is ready
+        MSG_EXPECTED_REQUEST,           // request expected result
+        MSG_EXPECTED_REPLY,             // reply with expected result
+        MSG_DONE_CHECKING               // checker has done checking
     } msg_t;
 
 endpackage

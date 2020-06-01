@@ -13,6 +13,7 @@ reacting messages to responsible components
 */
 
 import tb_pkg::*;
+`include "tb_transactions.sv";
 
 class tb_monitor;
 
@@ -54,7 +55,36 @@ class tb_monitor;
 
     // Monitor system's state & send/receive reacting messages
     task run();
+
+        // declarations
+        mailbox_message msg;
+        int count = 0;
+
         $display("Monitor starts running");
+
+        forever begin
+
+            $display("****************************************************************************************************");
+
+            // wait for STIMULUS_READY_READ/WRITE from generator
+            $display("[Monitor] wait for stimulus from generator");
+            generator2monitor.get(msg);
+            $display("Generator -> Monitor");
+            msg.display();
+            
+            // send the transaction to driver, checker & scoreboard
+            $display("[Monitor] send to driver");
+            monitor2driver.put(msg);
+            $display("[Monitor] send to checker");
+            monitor2checker.put(msg);
+            $display("[Monitor] send to scoreboard");
+            monitor2scoreboard.put(msg);
+
+            count += 1;
+            if (count >= 3) begin
+                break;
+            end
+        end
     endtask
 
 endclass

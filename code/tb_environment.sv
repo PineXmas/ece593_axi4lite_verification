@@ -70,6 +70,9 @@ class tb_environment;
     task run();
         $display("Testbench starts running");
 
+        // reset DUT
+        bfm.reset_dut();
+
         // start running each component in a separate thread
         fork
             monitor.run();

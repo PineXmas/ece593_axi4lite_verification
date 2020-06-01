@@ -14,10 +14,10 @@ monitor:
     - repeat
 
 generator:
-    - wait for DONE_CHECKING from monitor
     - generate next stimulus
     - send STIMULUS_READY_READ/WRITE to monitor
-    - repeat
+    - wait for DONE_CHECKING from monitor
+    - repeat until end of transaction-list
 
 driver:
     - wait for STIMULUS_READY_READ/WRITE from monitor

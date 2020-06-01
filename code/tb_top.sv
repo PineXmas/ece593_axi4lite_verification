@@ -47,6 +47,12 @@ module tb_top;
         env.build();
         env.run();
 
+        // TODO: debug now, remove later
+        # 1000;
+        $display("");
+        $display("******************************************");
+        $display("***   Auto stop after 1000 ticks !!!   ***");
+        $display("******************************************");
         $stop();
     end
 endmodule

@@ -12,6 +12,7 @@ generates stimulus for our testbench
 */
 
 import tb_pkg::*;
+`include "tb_transactions.sv";
 
 class tb_generator;
 
@@ -37,7 +38,21 @@ class tb_generator;
 
     // Generate stimulus
     task run();
+        // declarations
+        pkt_write write_op;
+        int i;
+
         $display("Generator starts running");
+
+        // TODO: fix the number of transactions, changed later
+
+        for (int i=0; i<3; i++) begin
+            write_op = new();
+            write_op.addr = i;
+            write_op.data = i*10;
+            generator2monitor.put(write_op);
+        end
+
     endtask
 
 endclass

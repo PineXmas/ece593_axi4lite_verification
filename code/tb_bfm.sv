@@ -51,4 +51,11 @@ interface tb_bfm;
         end
     end
 
+    // reset
+    task reset_dut();
+        areset_n = 0;
+        repeat (2) @(posedge aclk);
+        areset_n = 1;
+    endtask;
+
 endinterface
