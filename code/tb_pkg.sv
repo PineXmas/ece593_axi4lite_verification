@@ -18,8 +18,8 @@ package tb_pkg;
     parameter CLOCK_WIDTH = CLOCK_CYCLE / 2;
 
     // write transaction (RANDOM)
-    parameter AWADDR_RAND_MIN = 32'h5FF;
-    parameter AWADDR_RAND_MAX = 32'hFFF;
+    parameter AWADDR_RAND_MIN = 32'd0;
+    parameter AWADDR_RAND_MAX = 32'd32;
 
     // type of messages exchanged between the components (via the mailbox)
     typedef enum {

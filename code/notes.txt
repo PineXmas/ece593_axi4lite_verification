@@ -1,3 +1,11 @@
+****************************************************************************************************
+*** v1.0
+****************************************************************************************************
+
+//////////////////////////////////////////////////
+// Flow
+//////////////////////////////////////////////////
+
 monitor:
     Responsibilities:
     - mailbox hub
@@ -25,8 +33,7 @@ generator:
 driver:
     - wait for STIMULUS_READY_READ/WRITE from monitor
     - drive corresponding stimulus to DUT
-    - repeat
-    - (optional: check for stop executing if receive STOP from monitor)
+    - repeat, until receiving DONE_ALL from the monitor
 
 checker:
     - wait for STIMULUS_READY_READ/WRITE from monitor
@@ -35,25 +42,46 @@ checker:
     - wait for EXPECTED_REPLY from scoreboard (via monitor)
     - compare results & log
     - send DONE_CHECKING to monitor
-    - repeat
-    - (optional: check for stop executing if receive STOP from monitor)
+    - repeat, until receiving DONE_ALL from the monitor
 
 scoreboard:
     - wait for STIMULUS_READY_READ/WRITE from monitor
     - record/generate/retrieve corresponding expected results
     - wait for EXPECTED_REQUEST from checker (via monitor)
     - send EXPECTED_REPLY with attached expected result back to checker (via monitor)
-    - repeat
-    - (optional: check for stop executing if receive STOP from monitor)
+    - repeat, until receiving DONE_ALL from the monitor
 
 coverage:
     - wait for STIMULUS_READY_READ/WRITE from monitor
     - check on DUT for the right moments to sample for the coverage
-    - repeat
-    - (optional: check for stop executing if receive STOP from monitor)
+    - repeat, until receiving DONE_ALL from the monitor
 
-**************************************************
-
-Fix:
+//////////////////////////////////////////////////
+// AXI4-Lite
+//////////////////////////////////////////////////
 
 - DUT, slave: read the data into buffer in the state "WDATA" only. If read in state "WADDR" => the new address/data is not updated yet ==> the wrong data (wvalid is not adderted yet) or wrong address (new address is only guaranteed to be updated at the end of WADDR cycle)
+
+****************************************************************************************************
+*** v1.1
+****************************************************************************************************
+
+//////////////////////////////////////////////////
+// Flow
+//////////////////////////////////////////////////
+
+scoreboard:
+    - maintain a buffer same size as in the slave
+    - for the following transactions:
+        + write: write to the buffer also
+        + read: retrieve the value from the buffer to be used as expected result
+
+generator:
+    - can now generate random stimulus (read/write)
+
+//////////////////////////////////////////////////
+// Test case
+//////////////////////////////////////////////////
+
+- Test file can now be passed as command argument
+- Test file can now accomodate random write/read transactions

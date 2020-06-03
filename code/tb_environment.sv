@@ -63,9 +63,25 @@ class tb_environment;
         $display("    - Coverage built");
     endtask
 
+    // Parse command line for test file path & return
+    function string parse_test_file_path();
+        string file_path;
+
+        if ($value$plusargs ("file=%s", file_path)) begin
+            // do nothing since success
+        end
+        else begin
+            file_path = "";
+        end
+
+        parse_test_file_path = file_path;
+    endfunction
+
     // Start the whole testbench
     task run();
         $display("Testbench starts running");
+
+        // TODO: (continue) parse input file path
 
         // reset DUT
         bfm.reset_dut();

@@ -45,18 +45,18 @@ endclass
  * Class for a write transaction: RANDOM
  */
 class pkt_write_rand extends mailbox_message;
-    rand    bit  [31:0]	addr;   // write address
-    rand    bit  [31:0]	data;   // write data
+    rand addr_t	addr;   // write address
+    rand data_t	data;   // write data
 
     // contraints on the write-address
     constraint awaddr_c {
-        addr >  AWADDR_RAND_MIN;
+        addr >= AWADDR_RAND_MIN;
         addr <= AWADDR_RAND_MAX;
     }
    
     // constructor
-    function new();
-        super.new(MSG_STIMULUS_READY_WRITE);
+    function new(msg_t msg_type = MSG_STIMULUS_READY_WRITE);
+        super.new(msg_type);
     endfunction
 
     // display 
@@ -69,6 +69,7 @@ endclass
 
 /*
  * Class for a write transaction: DETERMINISTIC
+ * Could be used to store expected result of a write transaction
  */
 class pkt_write extends mailbox_message;
     addr_t addr;    // write address
@@ -90,8 +91,11 @@ class pkt_write extends mailbox_message;
     endfunction
 endclass
 
+// ****************************************************************************************************
+
 /*
  * Class for a read transaction: DETERMINISTIC
+ * Could be used to store expected result of a read transaction
  */
 class pkt_read extends mailbox_message;
 	addr_t addr;    // read address
@@ -113,20 +117,29 @@ class pkt_read extends mailbox_message;
     endfunction
 endclass
 
-// //Class for read operation during read transaction: RANDOM
-// class pkt_read;
-// 	rand	bit			start_write;
-// 	rand	bit			start_read;
-// 	rand	bit	[31:0]	addr;	     
+// ****************************************************************************************************
 
-// 	constraint araddr_c{		//****
-// 		addr >  32'h5ff;			
-// 		addr <= 32'hfff;
-// 	}
+/*
+ * Class for a read transaction: RANDOM
+ */
+class pkt_read_rand extends mailbox_message;
+	rand addr_t	addr;	     
 
-// 	function void display();
-// 		$display("Read request from Master:: addr = %b", addr);
-// 	endfunction
-// endclass
+    // contraints on the read-address
+    constraint awaddr_c {
+        addr >= AWADDR_RAND_MIN;
+        addr <= AWADDR_RAND_MAX;
+    }
+   
+    // constructor
+    function new(msg_t msg_type = MSG_STIMULUS_READY_READ);
+        super.new(msg_type);
+    endfunction
+
+    // display 
+    function void display();
+        $display("%s: read (random), addr = %h", msg_type.name, addr);
+    endfunction
+endclass
 
 `endif

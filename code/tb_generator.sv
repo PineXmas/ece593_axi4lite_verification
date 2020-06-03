@@ -104,26 +104,11 @@ class tb_generator;
             
             // generate next stimulus
             $display("[Generator] generate stimulus");
-            // // TODO: fixed transaction for debug, remove later
-            // if (i < 3) begin
-            //     write_op = new();
-            //     write_op.addr = i;
-            //     write_op.data = i+10;
-            //     write_op.display();
-            //     msg_stimulus = write_op;
-            // end
-            // else begin
-            //     read_op = new();
-            //     read_op.addr = i-3;
-            //     read_op.data = (i-3) + 10;
-            //     read_op.display();
-            //     msg_stimulus = read_op;
-            // end
-
             $fgets(line, fd);
             line = str_strip(line);
             line = line.toupper();
             if (line.len() <= 0) begin
+                $display("[Generator] skip empty line");
                 continue;
             end
             msg_stimulus = gen_stimulus(line);
