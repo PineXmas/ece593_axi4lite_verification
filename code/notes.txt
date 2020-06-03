@@ -10,15 +10,20 @@ monitor:
         + driver
         + checker
         + scoreboard
-    - wait for DONE_CHECKING from checker
-    - send DONE_CHECKING to generator
+    - wait for EXPECTED_REQUEST from checker & send to scoreboard
+    - wait for EXPECTED_REPLY from scoreboard & send to checker
+    - wait for DONE_CHECKING from checker & send to generator
     - repeat
+
+    (- repeat until receiving DONE_GENERATING from the generator)
 
 generator:
     - generate next stimulus
     - send STIMULUS_READY_READ/WRITE to monitor
     - wait for DONE_CHECKING from monitor
     - repeat until end of transaction-list
+
+    (- send DONE_GENERATING to monitor)
 
 driver:
     - wait for STIMULUS_READY_READ/WRITE from monitor

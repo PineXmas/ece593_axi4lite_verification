@@ -15,6 +15,7 @@ info for different transactions.
 `define TB_TRANSACTIONS
 
 import tb_pkg::*;
+import axi_lite_pkg::*;
 
 // ****************************************************************************************************
 
@@ -33,7 +34,7 @@ class mailbox_message;
 
     // display content of this message
     virtual function void display();
-        $display("Unknown message");
+        $display("%s", msg_type.name);
     endfunction
     
 endclass
@@ -70,12 +71,12 @@ endclass
  * Class for a write transaction: DETERMINISTIC
  */
 class pkt_write extends mailbox_message;
-    bit  [31:0]	addr;   // write address
-    bit  [31:0]	data;   // write data
+    addr_t addr;    // write address
+    data_t data;    // write data
    
     // constructor
-    function new();
-        super.new(MSG_STIMULUS_READY_WRITE);
+    function new(msg_t msg_type = MSG_STIMULUS_READY_WRITE);
+        super.new(msg_type);
     endfunction
 
     // construct this message by parsing the given string

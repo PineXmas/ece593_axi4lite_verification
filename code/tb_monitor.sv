@@ -13,7 +13,9 @@ reacting messages to responsible components
 */
 
 import tb_pkg::*;
-`include "tb_transactions.sv";
+
+`ifndef TB_MONITOR
+`define TB_MONITOR
 
 class tb_monitor;
 
@@ -53,24 +55,35 @@ class tb_monitor;
 
     endfunction
 
+    // Wait for the given message type in the given mailbox
+    static task automatic wait_message(mailbox mbx, msg_t msg_type, ref mailbox_message msg);
+
+        while (1) begin
+            mbx.get(msg);
+            if (msg.msg_type == msg_type) begin
+                break;
+            end
+        end
+
+    endtask
+
     // Monitor system's state & send/receive reacting messages
     task run();
 
         // declarations
         mailbox_message msg;
         int count = 0;
+        bit done_generating = 0;
 
-        $display("Monitor starts running");
+        $display("[Monitor] starts running");
 
         forever begin
-
-            $display("****************************************************************************************************");
 
             // wait for STIMULUS_READY_READ/WRITE from generator
             $display("[Monitor] wait for stimulus from generator");
             while (1) begin
                 generator2monitor.get(msg);
-                $display("Generator -> Monitor");
+                $display("[Monitor] Generator -> Monitor: %s", msg.msg_type);
                 msg.display();
 
                 if (msg.msg_type == MSG_STIMULUS_READY_READ
@@ -78,36 +91,47 @@ class tb_monitor;
                 ) begin
                     break;
                 end
+
+                // stop if received DONE_GENERATING
+                if (msg.msg_type == MSG_DONE_GENERATING) begin
+                    $display("[Monitor] stop simulation");
+                    $stop();
+                end
             end
             
-            // send the transaction to driver, checker & scoreboard
+            // send the transaction to driver, checker, scoreboard & coverage
             $display("[Monitor] send to driver");
             monitor2driver.put(msg);
             $display("[Monitor] send to checker");
             monitor2checker.put(msg);
             $display("[Monitor] send to scoreboard");
             monitor2scoreboard.put(msg);
+            $display("[Monitor] send to coverage");
+            monitor2coverage.put(msg);
 
-            // wait for DONE_CHECKING from checker
+            // wait for EXPECTED_REQUEST from checker & send to scoreboard
+            $display("[Monitor] wait expected-request from checker");
+            wait_message(checker2monitor, MSG_EXPECTED_REQUEST, msg);
+            $display("[Monitor] Checker -> Monitor: %s", msg.msg_type);
+            $display("[Monitor] send expected-request to scoreboard");
+            monitor2scoreboard.put(msg);
 
-            // NOT TESTED YET
+            // wait for EXPECTED_REPLY from scoreboard & send to checker
+            $display("[Monitor] wait expected-reply from scoreboard");
+            wait_message(scoreboard2monitor, MSG_EXPECTED_REPLY, msg);
+            $display("[Monitor] Scoreboard -> Monitor: %s", msg.msg_type);
+            $display("[Monitor] send expected-reply to checker");
+            monitor2checker.put(msg);
 
+            // wait for DONE_CHECKING from checker & send to generator
             $display("[Monitor] wait for checking done");
-            while (1) begin
-                checker2monitor.get(msg);
-                $display("Checker -> Monitor");
-                msg.display();
-
-                if (msg.msg_type == MSG_DONE_CHECKING) begin
-                    break;
-                end
-            end
-
-            count += 1;
-            if (count >= 3) begin
-                break;
-            end
+            wait_message(checker2monitor, MSG_DONE_CHECKING, msg);
+            $display("[Monitor] Checker -> Monitor: %s", msg.msg_type);
+            $display("[Monitor] send done checking to generator");
+            monitor2generator.put(msg);
         end
     endtask
 
 endclass
+
+`endif

@@ -28,7 +28,18 @@ package tb_pkg;
         MSG_STIMULUS_READY_WRITE,       // a write transaction is ready
         MSG_EXPECTED_REQUEST,           // request expected result
         MSG_EXPECTED_REPLY,             // reply with expected result
-        MSG_DONE_CHECKING               // checker has done checking
+        MSG_DONE_CHECKING,              // checker has done checking
+        MSG_DONE_GENERATING             // generator has done generating
     } msg_t;
+
+    // include class definitions
+    `include "tb_transactions.sv";
+    `include "tb_monitor.sv";
+    `include "tb_generator.sv";
+    `include "tb_driver.sv";
+    `include "tb_checker.sv";
+    `include "tb_scoreboard.sv";
+    `include "tb_coverage.sv";
+    `include "tb_environment.sv";
 
 endpackage

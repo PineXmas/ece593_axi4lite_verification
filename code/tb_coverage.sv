@@ -13,6 +13,9 @@ samples & computes statistics of the DUT's coverage
 
 import tb_pkg::*;
 
+`ifndef TB_COVERAGE
+`define TB_COVERAGE
+
 class tb_coverage;
 
     // **************************************************
@@ -37,7 +40,26 @@ class tb_coverage;
 
     // Sample & compute coverage
     task run();
-        $display("Coverage starts running");
+
+        // declarations
+        mailbox_message msg;
+
+        $display("[Coverage] starts running");
+
+        forever begin
+            
+            // wait for STIMULUS_READY_READ/WRITE from monitor
+            monitor2coverage.get(msg);
+            $display("[Coverage] Monitor -> Coverage");
+            msg.display();
+
+            // sample signals for coverage
+            $display("[Coverage] sample for coverage");
+            
+        end
+
     endtask
 
 endclass
+
+`endif

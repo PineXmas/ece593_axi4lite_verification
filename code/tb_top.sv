@@ -11,7 +11,6 @@ This file defines the top module for our AXI4-Lite verification testbench
 */
 
 import tb_pkg::*;
-`include "tb_environment.sv";
 
 module tb_top;
     

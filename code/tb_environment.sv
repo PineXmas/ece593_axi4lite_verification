@@ -13,12 +13,9 @@ and acts as the main entrance for our testbench
 */
 
 import tb_pkg::*;
-`include "tb_monitor.sv";
-`include "tb_generator.sv";
-`include "tb_driver.sv";
-`include "tb_checker.sv";
-`include "tb_scoreboard.sv";
-`include "tb_coverage.sv";
+
+`ifndef TB_ENVIRONMENT
+`define TB_ENVIRONMENT
 
 class tb_environment;
 
@@ -86,3 +83,5 @@ class tb_environment;
     endtask
 
 endclass
+
+`endif
