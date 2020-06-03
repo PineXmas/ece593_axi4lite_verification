@@ -43,10 +43,12 @@ class tb_generator;
 
         // declarations
         mailbox_message msg;
+        mailbox_message msg_stimulus;
         pkt_write write_op;
+        pkt_read read_op;
         int i;
 
-        $display("[Generator] starts running");
+        $display("[Generator] start running");
 
         // generate stimulus until done
         i = 0;
@@ -55,13 +57,24 @@ class tb_generator;
             
             // generate next stimulus
             $display("[Generator] generate stimulus");
-            write_op = new();
-            write_op.addr = i;
-            write_op.data = i+10;
-            write_op.display();
+            // TODO: fixed transaction for debug, remove later
+            if (i < 3) begin
+                write_op = new();
+                write_op.addr = i;
+                write_op.data = i+10;
+                write_op.display();
+                msg_stimulus = write_op;
+            end
+            else begin
+                read_op = new();
+                read_op.addr = i-3;
+                read_op.data = (i-3) + 10;
+                read_op.display();
+                msg_stimulus = read_op;
+            end
 
             // send STIMULUS_READY_READ/WRITE to monitor
-            generator2monitor.put(write_op);
+            generator2monitor.put(msg_stimulus);
 
             // wait for DONE_CHECKING from monitor
             $display("[Generator] wait for checking done");
@@ -70,7 +83,7 @@ class tb_generator;
 
             // TODO: fix the number of transactions, changed later
             i += 1;
-            if (i >= 3) begin
+            if (i >= 4) begin
                 break;
             end
         end
@@ -79,6 +92,7 @@ class tb_generator;
         $display("[Generator] send done generating to monitor");
         msg = new(MSG_DONE_GENERATING);
         generator2monitor.put(msg);
+        $display("[Generator] stop running");
 
     endtask
 

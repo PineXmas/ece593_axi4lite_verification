@@ -80,6 +80,12 @@ class tb_environment;
             coverage.run();
         join
 
+        // report stats
+        $display("\n****************************************************************************************************");
+        $display("REPORTS");
+        $display("****************************************************************************************************\n");
+        $display("Error count = %d", checker_01.n_errors);
+
     endtask
 
 endclass

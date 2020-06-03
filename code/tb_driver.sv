@@ -44,8 +44,9 @@ class tb_driver;
         // declarations
         mailbox_message msg;
         pkt_write write_op;
+        pkt_read read_op;
 
-        $display("[Driver] starts running");
+        $display("[Driver] start running");
 
         forever begin
             
@@ -56,7 +57,18 @@ class tb_driver;
 
             // drive based on the received message
             case(msg.msg_type)
+            
                 MSG_STIMULUS_READY_READ: begin
+                    if (!$cast(read_op, msg)) begin
+                        continue;
+                    end
+                    
+                    $display("[Driver] drive read-transaction to DUT");
+                    @(negedge bfm.aclk);
+                    bfm.addr = read_op.addr;
+                    bfm.start_read = 1;
+                    @(negedge bfm.aclk);
+                    bfm.start_read = 0;
                 end
 
                 MSG_STIMULUS_READY_WRITE: begin
@@ -64,7 +76,7 @@ class tb_driver;
                         continue;
                     end
                     
-                    $display("[Driver] Drive write-transaction to DUT");
+                    $display("[Driver] drive write-transaction to DUT");
                     @(negedge bfm.aclk);
                     bfm.addr = write_op.addr;
                     bfm.data = write_op.data;
@@ -73,8 +85,14 @@ class tb_driver;
                     bfm.start_write = 0;
                 end
 
+                MSG_DONE_ALL: begin
+                    $display("[Driver] stop running");
+                    break;
+                end
+
                 default: begin
-                    // do nothing    
+                    // do nothing   
+                    $display("[Driver] un-expected message received: %s", msg.msg_type);
                 end
             endcase
         end

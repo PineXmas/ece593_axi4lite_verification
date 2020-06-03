@@ -29,6 +29,7 @@ package tb_pkg;
         MSG_EXPECTED_REQUEST,           // request expected result
         MSG_EXPECTED_REPLY,             // reply with expected result
         MSG_DONE_CHECKING,              // checker has done checking
+        MSG_DONE_ALL,                   // all the tests have done
         MSG_DONE_GENERATING             // generator has done generating
     } msg_t;
 

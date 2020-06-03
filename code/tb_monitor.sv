@@ -75,7 +75,7 @@ class tb_monitor;
         int count = 0;
         bit done_generating = 0;
 
-        $display("[Monitor] starts running");
+        $display("[Monitor] start running");
 
         forever begin
 
@@ -94,8 +94,9 @@ class tb_monitor;
 
                 // stop if received DONE_GENERATING
                 if (msg.msg_type == MSG_DONE_GENERATING) begin
-                    $display("[Monitor] stop simulation");
-                    $stop();
+                    done_generating = 1;
+                    msg.msg_type = MSG_DONE_ALL;
+                    break;
                 end
             end
             
@@ -108,6 +109,12 @@ class tb_monitor;
             monitor2scoreboard.put(msg);
             $display("[Monitor] send to coverage");
             monitor2coverage.put(msg);
+
+            // stop if done_generating
+            if (done_generating) begin
+                $display("[Monitor] stop running");
+                break;
+            end
 
             // wait for EXPECTED_REQUEST from checker & send to scoreboard
             $display("[Monitor] wait expected-request from checker");

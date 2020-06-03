@@ -47,8 +47,10 @@ class tb_scoreboard;
         mailbox_message expected_result;
         pkt_write write_op;
         pkt_write write_result;
+        pkt_read read_op;
+        pkt_read read_result;
 
-        $display("[Scoreboard] starts running");
+        $display("[Scoreboard] start running");
 
         forever begin
             
@@ -60,6 +62,16 @@ class tb_scoreboard;
             // record/retrieve expected result
             case(msg.msg_type)
                 MSG_STIMULUS_READY_READ: begin
+                    if (!$cast(read_op, msg)) begin
+                        continue;
+                    end
+                    
+                    // record expected results
+                    $display("[Scoreboard] Record expected results of read-transaction");
+                    read_result = new(MSG_EXPECTED_REPLY);
+                    read_result.addr = read_op.addr;
+                    read_result.data = read_op.data;
+                    expected_result = read_result;
                 end
 
                 MSG_STIMULUS_READY_WRITE: begin
@@ -68,15 +80,21 @@ class tb_scoreboard;
                     end
                     
                     // record expected results
-                    $display("[Scoreboard] Record expected results");
+                    $display("[Scoreboard] Record expected results of write-transaction");
                     write_result = new(MSG_EXPECTED_REPLY);
                     write_result.addr = write_op.addr;
                     write_result.data = write_op.data;
                     expected_result = write_result;
                 end
 
+                MSG_DONE_ALL: begin
+                    $display("[Scoreboard] stop running");
+                    break;
+                end
+
                 default: begin
                     // do nothing    
+                    $display("[Scoreboard] un-expected message received: %s", msg.msg_type);
                 end
             endcase
 
@@ -84,15 +102,6 @@ class tb_scoreboard;
             $display("[Scoreboard] Wait expected-request from monitor");
             tb_monitor::wait_message(monitor2scoreboard, MSG_EXPECTED_REQUEST, msg);
             $display("[Scoreboard] Monitor -> Scoreboard: %s", msg.msg_type);
-
-            // while (1) begin
-            //     monitor2scoreboard.get(msg);
-            //     $display("[Scoreboard] Monitor -> Scoreboard: %s", msg.msg_type);
-
-            //     if (msg.msg_type == MSG_EXPECTED_REQUEST) begin
-            //         break;
-            //     end
-            // end
 
             // send EXPECTED_REPLY to monitor
             $display("[Scoreboard] Send expected-reply to monitor");

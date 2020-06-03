@@ -80,7 +80,7 @@ class pkt_write extends mailbox_message;
     endfunction
 
     // construct this message by parsing the given string
-    function build(string s);
+    function void build(string s);
         // TODO: change later, fixed values for now
         addr = 32'h0004;
         data = 32'hABCD;
@@ -92,7 +92,31 @@ class pkt_write extends mailbox_message;
     endfunction
 endclass
 
-// //Class for read operation during read transaction
+/*
+ * Class for a read transaction: DETERMINISTIC
+ */
+class pkt_read extends mailbox_message;
+	addr_t addr;    // read address
+    data_t data;    // expected data read
+
+    // constructor
+    function new(msg_t msg_type = MSG_STIMULUS_READY_READ);
+        super.new(msg_type);
+    endfunction
+
+    // construct this message by parsing the given string
+    function void build(string s);
+        // TODO: change later, fixed values for now
+        addr = 32'h0004;
+    endfunction
+
+    // display 
+    function void display();
+        $display("%s: read, addr = %h, expect-data = %h", msg_type.name, addr, data);
+    endfunction
+endclass
+
+// //Class for read operation during read transaction: RANDOM
 // class pkt_read;
 // 	rand	bit			start_write;
 // 	rand	bit			start_read;

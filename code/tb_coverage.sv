@@ -44,7 +44,7 @@ class tb_coverage;
         // declarations
         mailbox_message msg;
 
-        $display("[Coverage] starts running");
+        $display("[Coverage] start running");
 
         forever begin
             
@@ -52,6 +52,12 @@ class tb_coverage;
             monitor2coverage.get(msg);
             $display("[Coverage] Monitor -> Coverage");
             msg.display();
+
+            // break if DONE_ALL is received
+            if (msg.msg_type == MSG_DONE_ALL) begin
+                $display("[Coverage] stop running");
+                break;
+            end
 
             // sample signals for coverage
             $display("[Coverage] sample for coverage");
