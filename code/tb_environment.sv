@@ -84,7 +84,7 @@ class tb_environment;
         $display("\n****************************************************************************************************");
         $display("REPORTS");
         $display("****************************************************************************************************\n");
-        $display("Error count = %d", checker_01.n_errors);
+        $display("Error count = %0d/%0d", checker_01.n_errors, checker_01.n_tests);
 
     endtask
 

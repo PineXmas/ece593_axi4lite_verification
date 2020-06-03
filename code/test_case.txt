@@ -1,0 +1,6 @@
+write 01 1000
+read 01 1000
+write 0A 1234
+write 0B 9999
+read 0A 1234
+

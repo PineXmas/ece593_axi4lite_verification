@@ -27,6 +27,7 @@ class tb_checker;
     virtual tb_bfm	bfm;                        // bfm
     mailbox monitor2checker, checker2monitor;   // communication with monitor
     int n_errors;                               // error count
+    int n_tests;                                // number of tests
 
     // **************************************************
     // METHODS
@@ -59,6 +60,7 @@ class tb_checker;
         // setup
         msg_done = new(MSG_DONE_CHECKING);
         n_errors = 0;
+        n_tests = 0;
 
         forever begin
             
@@ -71,6 +73,7 @@ class tb_checker;
 
                 // *** READ TRANSACTION ***
                 MSG_STIMULUS_READY_READ: begin
+                    ++n_tests;
                     if (!$cast(read_op, msg)) begin
                         continue;
                     end
@@ -112,6 +115,7 @@ class tb_checker;
 
                 // *** WRITE TRANSACTION ***
                 MSG_STIMULUS_READY_WRITE: begin
+                    ++n_tests;
                     if (!$cast(write_op, msg)) begin
                         continue;
                     end

@@ -33,7 +33,42 @@ package tb_pkg;
         MSG_DONE_GENERATING             // generator has done generating
     } msg_t;
 
+    // **************************************************
+    // SUPPORT FUNCTIONS
+    // **************************************************
+
+    // remove leading & trailing whitespaces from the given string
+    function string str_strip(string s);
+        string tmp;
+
+        // trim leading
+        while (s.len() > 0) begin
+            tmp = s.substr(0, 0);
+            if (tmp != " " && tmp != "\n") begin
+                break;
+            end
+
+            s = s.substr(1, s.len()-1);
+        end
+
+        // trim trailing
+        while (s.len() > 0) begin
+            tmp = s.substr(s.len()-1, s.len()-1);
+            if (tmp != " " && tmp != "\n") begin
+                break;
+            end
+
+            s = s.substr(0, s.len()-2);
+        end
+
+        str_strip = s;
+
+    endfunction
+
+    // **************************************************
     // include class definitions
+    // **************************************************
+    
     `include "tb_transactions.sv";
     `include "tb_monitor.sv";
     `include "tb_generator.sv";

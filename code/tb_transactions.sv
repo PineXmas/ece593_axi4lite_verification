@@ -81,9 +81,7 @@ class pkt_write extends mailbox_message;
 
     // construct this message by parsing the given string
     function void build(string s);
-        // TODO: change later, fixed values for now
-        addr = 32'h0004;
-        data = 32'hABCD;
+        $sscanf(s, "WRITE %h %h", addr, data);
     endfunction
 
     // display 
@@ -106,8 +104,7 @@ class pkt_read extends mailbox_message;
 
     // construct this message by parsing the given string
     function void build(string s);
-        // TODO: change later, fixed values for now
-        addr = 32'h0004;
+        $sscanf(s, "READ %h %h", addr, data);
     endfunction
 
     // display 
