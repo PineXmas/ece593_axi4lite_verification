@@ -26,6 +26,7 @@ class tb_generator;
     typedef struct {
         int n_repeats;                  // number of times to repeat the stimulus
         mailbox_message msg_stimulus;   // the stimulus to send out
+        bit is_random_mixed;            // the stimulus is selected randomly between read/write
     } stimulus_t;
 
     // **************************************************
@@ -50,7 +51,7 @@ class tb_generator;
 
     endfunction
 
-    // Generate stimulus from the given string
+    // Generate stimulus from the given string (the string should be UPPER-case only)
     function stimulus_t gen_stimulus(string line);
         pkt_read read_op;               // in case read-transaction
         pkt_write write_op;             // in case write-transaction
@@ -62,7 +63,8 @@ class tb_generator;
         stimulus_t stimulus_info;       // final stimulus info
 
         // select type
-        n_parseds = $sscanf(line, "%s", op_type);
+        n_parseds = $sscanf(line, "%s %d", op_type, n_val);
+        stimulus_info.is_random_mixed = 0;
         case(op_type)
             "WRITE": begin
                 write_op = new();
@@ -90,6 +92,12 @@ class tb_generator;
                 read_rand_op.build(line);
                 stimulus_info.msg_stimulus = read_rand_op;
                 stimulus_info.n_repeats = read_rand_op.n_repeats;
+            end
+
+            "RAND": begin
+                stimulus_info.is_random_mixed = 1;
+                stimulus_info.msg_stimulus = new(MSG_STIMULUS_RAND);
+                stimulus_info.n_repeats = n_val;
             end
 
             default: begin
@@ -147,6 +155,21 @@ class tb_generator;
             // repeat until end of this stimulus
             for (int i=0; i<stimulus_info.n_repeats; i++) begin
                 
+                // determine stimulus type if mixed transaction
+                if (stimulus_info.is_random_mixed) begin
+                    bit selected = $urandom();
+                    if (selected) begin
+                        pkt_write_rand stimulus;
+                        stimulus = new();
+                        stimulus_info.msg_stimulus = stimulus;    
+                    end
+                    else begin
+                        pkt_read_rand stimulus;
+                        stimulus = new();
+                        stimulus_info.msg_stimulus = stimulus;
+                    end
+                end
+
                 // randomize stimulus if needed
                 if (stimulus_info.msg_stimulus.msg_type == MSG_STIMULUS_READY_WRITE_RAND) begin
                     pkt_write_rand stimulus;

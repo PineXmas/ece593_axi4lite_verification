@@ -5,3 +5,4 @@ write 0B 9999
 read 0A
 writerand 20
 readrand 20
+rand 100

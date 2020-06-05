@@ -28,6 +28,7 @@ class tb_checker;
     mailbox monitor2checker, checker2monitor;   // communication with monitor
     int n_errors;                               // error count
     int n_tests;                                // number of tests
+    int n_writes, n_reads;                      // number of write/read transactions
 
     // **************************************************
     // METHODS
@@ -59,6 +60,8 @@ class tb_checker;
         msg_done = new(MSG_DONE_CHECKING);
         n_errors = 0;
         n_tests = 0;
+        n_reads = 0;
+        n_writes = 0;
 
         forever begin
             
@@ -73,6 +76,7 @@ class tb_checker;
                 MSG_STIMULUS_READY_READ,
                 MSG_STIMULUS_READY_READ_RAND: begin
                     ++n_tests;
+                    ++n_reads;
 
                     // send EXPECTED_REQUEST to monitor
                     $display("[Checker] send expected-request to monitor");
@@ -114,6 +118,7 @@ class tb_checker;
                 MSG_STIMULUS_READY_WRITE,
                 MSG_STIMULUS_READY_WRITE_RAND: begin
                     ++n_tests;
+                    ++n_writes;
 
                     // send EXPECTED_REQUEST to monitor
                     $display("[Checker] send expected-request to monitor");

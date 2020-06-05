@@ -73,6 +73,13 @@ class tb_environment;
         $display("    - Coverage built");
     endtask
 
+    // Report statistics
+    function void report();
+        $display("Error count = %0d/%0d", checker_01.n_errors, checker_01.n_tests);
+        $display("Reads       = %0d", checker_01.n_reads);
+        $display("Writes      = %0d", checker_01.n_writes);
+    endfunction
+
     // Parse command line for test file path & return
     function string parse_test_file_path();
         string file_path;
@@ -108,7 +115,7 @@ class tb_environment;
         $display("\n****************************************************************************************************");
         $display("REPORTS");
         $display("****************************************************************************************************\n");
-        $display("Error count = %0d/%0d", checker_01.n_errors, checker_01.n_tests);
+        report();
 
     endtask
 

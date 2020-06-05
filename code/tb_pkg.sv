@@ -28,6 +28,7 @@ package tb_pkg;
         MSG_STIMULUS_READY_READ_RAND,   // a random read transaction is ready
         MSG_STIMULUS_READY_WRITE,       // a write transaction is ready
         MSG_STIMULUS_READY_WRITE_RAND,  // a random write transaction is ready
+        MSG_STIMULUS_RAND,              // a random mixed transaction
         MSG_EXPECTED_REQUEST,           // request expected result
         MSG_EXPECTED_REPLY,             // reply with expected result
         MSG_DONE_CHECKING,              // checker has done checking
