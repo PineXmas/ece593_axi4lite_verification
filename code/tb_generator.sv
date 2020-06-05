@@ -31,14 +31,12 @@ class tb_generator;
     // **************************************************
 
     // Constructor
-    function new(virtual tb_bfm bfm, mailbox monitor2generator, mailbox generator2monitor);
+    function new(virtual tb_bfm bfm, mailbox monitor2generator, mailbox generator2monitor, string file_path = "");
         this.bfm = bfm;
 
         this.monitor2generator = monitor2generator;
         this.generator2monitor = generator2monitor;
-
-        // TODO: pass file path from command argument
-        this.file_path = "test_case.txt";
+        this.file_path = file_path;
 
     endfunction
 

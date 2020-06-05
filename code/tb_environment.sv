@@ -42,12 +42,22 @@ class tb_environment;
 
     // Build all components
     task build();
+        // declarations
+        string file_path;       // input file path
+
         $display("Testbench starts building");
 
+        // parse input file path
+        file_path = parse_test_file_path();
+        if (file_path.len() <= 0) begin
+            $fatal("INPUT_NOT_FOUND", "Input file not provided.");
+        end
+
+        // build all components
         monitor = new(bfm);
         $display("    - Monitor built");
 
-        generator = new(bfm, monitor.monitor2generator, monitor.generator2monitor);
+        generator = new(bfm, monitor.monitor2generator, monitor.generator2monitor, file_path);
         $display("    - Generator built");
 
         driver = new(bfm, monitor.monitor2driver, monitor.driver2monitor);
@@ -80,8 +90,6 @@ class tb_environment;
     // Start the whole testbench
     task run();
         $display("Testbench starts running");
-
-        // TODO: (continue) parse input file path
 
         // reset DUT
         bfm.reset_dut();
