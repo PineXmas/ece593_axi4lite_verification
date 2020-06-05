@@ -48,9 +48,10 @@ class tb_generator;
         pkt_write write_op;             // in case write-transaction
         string op_type;                 // transaction type
         mailbox_message stimulus;       // final stimulus
+        int n_parseds;                  // number of successful parse from sscanf
 
         // select type
-        $sscanf(line, "%s", op_type);
+        n_parseds = $sscanf(line, "%s", op_type);
         case(op_type)
             "WRITE": begin
                 write_op = new();
@@ -83,6 +84,7 @@ class tb_generator;
         pkt_write write_op;             // write transaction 
         pkt_read read_op;               // read transaction
         int fd;                         // test file descriptor
+        int fgets_return;               // return of fgets function
         string op_type;                 // operation/transaction type
         string line;                    // a line in the test file
 
@@ -104,7 +106,7 @@ class tb_generator;
             
             // generate next stimulus
             $display("[Generator] generate stimulus");
-            $fgets(line, fd);
+            fgets_return = $fgets(line, fd);
             line = str_strip(line);
             line = line.toupper();
             if (line.len() <= 0) begin
