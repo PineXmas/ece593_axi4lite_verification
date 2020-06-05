@@ -48,9 +48,7 @@ class tb_checker;
         // declarations
         mailbox_message msg;            // message received from monitor
         mailbox_message msg_done;       // send DONE_CHECKING signal
-        pkt_write write_op;             // write-transaction
         pkt_write write_expected;       // expected result for write-transaction
-        pkt_read read_op;               // read-transaction
         pkt_read read_expected;         // expected result for read-transaction
         data_t wdata, rdata;            // write/read data from DUT
         addr_t awaddr, araddr;          // write/read address from DUT
@@ -72,11 +70,9 @@ class tb_checker;
             case(msg.msg_type)
 
                 // *** READ TRANSACTION ***
-                MSG_STIMULUS_READY_READ: begin
+                MSG_STIMULUS_READY_READ,
+                MSG_STIMULUS_READY_READ_RAND: begin
                     ++n_tests;
-                    if (!$cast(read_op, msg)) begin
-                        continue;
-                    end
 
                     // send EXPECTED_REQUEST to monitor
                     $display("[Checker] send expected-request to monitor");
@@ -103,7 +99,7 @@ class tb_checker;
                     $display("[Checker] verify with expected results");
                     if (read_expected.addr != araddr || read_expected.data != rdata) begin
                         $error("[Checker] results mismatched");
-                        read_op.display();
+                        msg.display();
                         n_errors += 1;
                     end
 
@@ -115,11 +111,9 @@ class tb_checker;
                 end
 
                 // *** WRITE TRANSACTION ***
-                MSG_STIMULUS_READY_WRITE: begin
+                MSG_STIMULUS_READY_WRITE,
+                MSG_STIMULUS_READY_WRITE_RAND: begin
                     ++n_tests;
-                    if (!$cast(write_op, msg)) begin
-                        continue;
-                    end
 
                     // send EXPECTED_REQUEST to monitor
                     $display("[Checker] send expected-request to monitor");
@@ -146,7 +140,7 @@ class tb_checker;
                     $display("[Checker] verify with expected results");
                     if (write_expected.addr != awaddr || write_expected.data != wdata) begin
                         $error("[Checker] results mismatched");
-                        write_op.display();
+                        msg.display();
                         n_errors += 1;
                     end
 

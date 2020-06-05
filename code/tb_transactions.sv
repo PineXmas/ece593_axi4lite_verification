@@ -47,6 +47,7 @@ endclass
 class pkt_write_rand extends mailbox_message;
     rand addr_t	addr;   // write address
     rand data_t	data;   // write data
+    int n_repeats;      // number of times to repeat
 
     // contraints on the write-address
     constraint awaddr_c {
@@ -55,8 +56,14 @@ class pkt_write_rand extends mailbox_message;
     }
    
     // constructor
-    function new(msg_t msg_type = MSG_STIMULUS_READY_WRITE);
+    function new(msg_t msg_type = MSG_STIMULUS_READY_WRITE_RAND);
         super.new(msg_type);
+    endfunction
+
+    // construct this message by parsing the given string
+    function void build(string s);
+        int n_parseds;
+        n_parseds = $sscanf(s, "WRITERAND %d", n_repeats);
     endfunction
 
     // display 
@@ -125,7 +132,8 @@ endclass
  * Class for a read transaction: RANDOM
  */
 class pkt_read_rand extends mailbox_message;
-	rand addr_t	addr;	     
+	rand addr_t	addr;   // read address
+    int n_repeats;      // number of times to repeat
 
     // contraints on the read-address
     constraint awaddr_c {
@@ -134,8 +142,14 @@ class pkt_read_rand extends mailbox_message;
     }
    
     // constructor
-    function new(msg_t msg_type = MSG_STIMULUS_READY_READ);
+    function new(msg_t msg_type = MSG_STIMULUS_READY_READ_RAND);
         super.new(msg_type);
+    endfunction
+
+    // construct this message by parsing the given string
+    function void build(string s);
+        int n_parseds;
+        n_parseds = $sscanf(s, "READRAND %d", n_repeats);
     endfunction
 
     // display 

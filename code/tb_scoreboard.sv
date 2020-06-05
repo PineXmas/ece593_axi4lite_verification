@@ -48,8 +48,10 @@ class tb_scoreboard;
         mailbox_message msg;
         mailbox_message expected_result;
         pkt_write write_op;
+        pkt_write_rand write_rand_op;
         pkt_write write_result;
         pkt_read read_op;
+        pkt_read_rand read_rand_op;
         pkt_read read_result;
 
         $display("[Scoreboard] start running");
@@ -76,6 +78,19 @@ class tb_scoreboard;
                     expected_result = read_result;
                 end
 
+                MSG_STIMULUS_READY_READ_RAND: begin
+                    if (!$cast(read_rand_op, msg)) begin
+                        continue;
+                    end
+                    
+                    // retrieve from buffer & prepare expected results
+                    $display("[Scoreboard] Record expected results of random-read-transaction");
+                    read_result = new(MSG_EXPECTED_REPLY);
+                    read_result.addr = read_rand_op.addr;
+                    read_result.data = buffer[read_result.addr];
+                    expected_result = read_result;
+                end
+
                 MSG_STIMULUS_READY_WRITE: begin
                     if (!$cast(write_op, msg)) begin
                         continue;
@@ -86,6 +101,23 @@ class tb_scoreboard;
                     write_result = new(MSG_EXPECTED_REPLY);
                     write_result.addr = write_op.addr;
                     write_result.data = write_op.data;
+                    expected_result = write_result;
+
+                    // write to buffer
+                    buffer[write_result.addr] = write_result.data;
+                end
+
+                MSG_STIMULUS_READY_WRITE,
+                MSG_STIMULUS_READY_WRITE_RAND: begin
+                    if (!$cast(write_rand_op, msg)) begin
+                        continue;
+                    end
+                    
+                    // prepare expected results
+                    $display("[Scoreboard] Record expected results of random-write-transaction");
+                    write_result = new(MSG_EXPECTED_REPLY);
+                    write_result.addr = write_rand_op.addr;
+                    write_result.data = write_rand_op.data;
                     expected_result = write_result;
 
                     // write to buffer
@@ -104,12 +136,12 @@ class tb_scoreboard;
             endcase
 
             // wait for EXPECTED_REQUEST from monitor
-            $display("[Scoreboard] Wait expected-request from monitor");
+            $display("[Scoreboard] wait expected-request from monitor");
             tb_monitor::wait_message(monitor2scoreboard, MSG_EXPECTED_REQUEST, msg);
             $display("[Scoreboard] Monitor -> Scoreboard: %s", msg.msg_type);
 
             // send EXPECTED_REPLY to monitor
-            $display("[Scoreboard] Send expected-reply to monitor");
+            $display("[Scoreboard] send expected-reply to monitor");
             scoreboard2monitor.put(expected_result);
         end
     endtask

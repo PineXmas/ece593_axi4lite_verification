@@ -19,6 +19,16 @@ import tb_pkg::*;
 class tb_generator;
 
     // **************************************************
+    // DEFINES
+    // **************************************************
+
+    // struct for storing stimulus info
+    typedef struct {
+        int n_repeats;                  // number of times to repeat the stimulus
+        mailbox_message msg_stimulus;   // the stimulus to send out
+    } stimulus_t;
+
+    // **************************************************
     // VARIABLES
     // **************************************************
 
@@ -41,12 +51,15 @@ class tb_generator;
     endfunction
 
     // Generate stimulus from the given string
-    function mailbox_message gen_stimulus(string line);
+    function stimulus_t gen_stimulus(string line);
         pkt_read read_op;               // in case read-transaction
         pkt_write write_op;             // in case write-transaction
+        pkt_write_rand write_rand_op;   // in case random write-transaction
+        pkt_read_rand read_rand_op;     // in case random read-transaction
         string op_type;                 // transaction type
-        mailbox_message stimulus;       // final stimulus
         int n_parseds;                  // number of successful parse from sscanf
+        int n_val;                      // value used to parse second argument in a line
+        stimulus_t stimulus_info;       // final stimulus info
 
         // select type
         n_parseds = $sscanf(line, "%s", op_type);
@@ -54,23 +67,40 @@ class tb_generator;
             "WRITE": begin
                 write_op = new();
                 write_op.build(line);
-                stimulus = write_op;
+                stimulus_info.msg_stimulus = write_op;
+                stimulus_info.n_repeats = 1;
             end
 
             "READ": begin
                 read_op = new();
                 read_op.build(line);
-                stimulus = read_op;    
+                stimulus_info.msg_stimulus = read_op;    
+                stimulus_info.n_repeats = 1;
+            end
+
+            "WRITERAND": begin
+                write_rand_op = new();
+                write_rand_op.build(line);
+                stimulus_info.msg_stimulus = write_rand_op;
+                stimulus_info.n_repeats = write_rand_op.n_repeats;
+            end
+
+            "READRAND": begin
+                read_rand_op = new();
+                read_rand_op.build(line);
+                stimulus_info.msg_stimulus = read_rand_op;
+                stimulus_info.n_repeats = read_rand_op.n_repeats;
             end
 
             default: begin
-                stimulus = new();
+                stimulus_info.msg_stimulus = new();
+                stimulus_info.n_repeats = 0;
             end
 
         endcase
 
         // return
-        gen_stimulus = stimulus;
+        gen_stimulus = stimulus_info;
     endfunction
 
     // Generate stimulus
@@ -78,7 +108,7 @@ class tb_generator;
 
         // declarations
         mailbox_message msg;            // message received from monitor
-        mailbox_message msg_stimulus;   // message to send stimulus
+        stimulus_t stimulus_info;       // info of the stimulus
         pkt_write write_op;             // write transaction 
         pkt_read read_op;               // read transaction
         int fd;                         // test file descriptor
@@ -111,16 +141,39 @@ class tb_generator;
                 $display("[Generator] skip empty line");
                 continue;
             end
-            msg_stimulus = gen_stimulus(line);
+            stimulus_info = gen_stimulus(line);
+            stimulus_info.msg_stimulus.display();
 
-            // send STIMULUS_READY_READ/WRITE to monitor
-            generator2monitor.put(msg_stimulus);
+            // repeat until end of this stimulus
+            for (int i=0; i<stimulus_info.n_repeats; i++) begin
+                
+                // randomize stimulus if needed
+                if (stimulus_info.msg_stimulus.msg_type == MSG_STIMULUS_READY_WRITE_RAND) begin
+                    pkt_write_rand stimulus;
+                    if ($cast(stimulus, stimulus_info.msg_stimulus)) begin
+                        $display("[Generator] randomize write %0d/%0d", i+1, stimulus_info.n_repeats);
+                        stimulus.randomize();
+                        stimulus.display();
+                    end
+                end
+                else if (stimulus_info.msg_stimulus.msg_type == MSG_STIMULUS_READY_READ_RAND) begin
+                    pkt_read_rand stimulus;
+                    if ($cast(stimulus, stimulus_info.msg_stimulus)) begin
+                        $display("[Generator] randomize read %0d/%0d", i+1, stimulus_info.n_repeats);
+                        stimulus.randomize();
+                        stimulus.display();
+                    end
+                end
 
-            // wait for DONE_CHECKING from monitor
-            $display("[Generator] wait for checking done");
-            tb_monitor::wait_message(monitor2generator, MSG_DONE_CHECKING, msg);
-            $display("[Generator] Monitor -> Generator: %s", msg.msg_type.name);
+                // send stimulus to monitor
+                generator2monitor.put(stimulus_info.msg_stimulus);
 
+                // wait for DONE_CHECKING from monitor
+                $display("[Generator] wait for checking done");
+                tb_monitor::wait_message(monitor2generator, MSG_DONE_CHECKING, msg);
+                $display("[Generator] Monitor -> Generator: %s", msg.msg_type.name);
+
+            end
         end
 
         // send done to monitor

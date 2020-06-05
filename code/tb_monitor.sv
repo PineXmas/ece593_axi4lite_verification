@@ -87,7 +87,9 @@ class tb_monitor;
                 msg.display();
 
                 if (msg.msg_type == MSG_STIMULUS_READY_READ
+                    || msg.msg_type == MSG_STIMULUS_READY_READ_RAND
                     || msg.msg_type == MSG_STIMULUS_READY_WRITE
+                    || msg.msg_type == MSG_STIMULUS_READY_WRITE_RAND
                 ) begin
                     break;
                 end

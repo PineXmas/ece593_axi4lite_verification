@@ -44,7 +44,9 @@ class tb_driver;
         // declarations
         mailbox_message msg;
         pkt_write write_op;
+        pkt_write_rand write_rand_op;
         pkt_read read_op;
+        pkt_read_rand read_rand_op;
 
         $display("[Driver] start running");
 
@@ -71,6 +73,19 @@ class tb_driver;
                     bfm.start_read = 0;
                 end
 
+                MSG_STIMULUS_READY_READ_RAND: begin
+                    if (!$cast(read_rand_op, msg)) begin
+                        continue;
+                    end
+                    
+                    $display("[Driver] drive random-read-transaction to DUT");
+                    @(negedge bfm.aclk);
+                    bfm.addr = read_rand_op.addr;
+                    bfm.start_read = 1;
+                    @(negedge bfm.aclk);
+                    bfm.start_read = 0;
+                end
+
                 MSG_STIMULUS_READY_WRITE: begin
                     if (!$cast(write_op, msg)) begin
                         continue;
@@ -80,6 +95,20 @@ class tb_driver;
                     @(negedge bfm.aclk);
                     bfm.addr = write_op.addr;
                     bfm.data = write_op.data;
+                    bfm.start_write = 1;
+                    @(negedge bfm.aclk);
+                    bfm.start_write = 0;
+                end
+
+                MSG_STIMULUS_READY_WRITE_RAND: begin
+                    if (!$cast(write_rand_op, msg)) begin
+                        continue;
+                    end
+                    
+                    $display("[Driver] drive random-write-transaction to DUT");
+                    @(negedge bfm.aclk);
+                    bfm.addr = write_rand_op.addr;
+                    bfm.data = write_rand_op.data;
                     bfm.start_write = 1;
                     @(negedge bfm.aclk);
                     bfm.start_write = 0;
