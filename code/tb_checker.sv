@@ -87,6 +87,7 @@ class tb_checker;
                     $display("[Checker] wait expected-reply from monitor");
                     tb_monitor::wait_message(monitor2checker, MSG_EXPECTED_REPLY, msg);
                     $display("[Checker] Monitor -> Checker: %s", msg.msg_type);
+                    msg.display();
                     if (!$cast(read_expected, msg)) begin
                         $fatal("[Checker] Cannot cast to pkt_read");
                     end
@@ -129,6 +130,7 @@ class tb_checker;
                     $display("[Checker] wait expected-reply from monitor");
                     tb_monitor::wait_message(monitor2checker, MSG_EXPECTED_REPLY, msg);
                     $display("[Checker] Monitor -> Checker: %s", msg.msg_type);
+                    msg.display();
                     if (!$cast(write_expected, msg)) begin
                         $fatal("[Checker] Cannot cast to pkt_write");
                     end

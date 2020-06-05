@@ -10,7 +10,7 @@ module axi_lite_slave (
 	state_type state, next_state;
 
 	addr_t addr;
-	data_t buffer[0 : 31];
+	data_t buffer[0 : BUFFER_SIZE-1];
 
 	// AR
 	assign s_axi_lite.arready = (state == RADDR) ? 1 : 0;

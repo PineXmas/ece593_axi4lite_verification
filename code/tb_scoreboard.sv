@@ -13,6 +13,7 @@ with DUT's results
 */
 
 import tb_pkg::*;
+import axi_lite_pkg::*;
 
 `ifndef TB_SCOREBOARD
 `define TB_SCOREBOARD
@@ -25,6 +26,7 @@ class tb_scoreboard;
 
     virtual tb_bfm	bfm;                                // bfm
     mailbox monitor2scoreboard, scoreboard2monitor;     // communication with monitor
+    data_t buffer[0 : BUFFER_SIZE-1];                   // buffer used as reference model
 
     // **************************************************
     // METHODS
@@ -66,11 +68,11 @@ class tb_scoreboard;
                         continue;
                     end
                     
-                    // record expected results
+                    // retrieve from buffer & prepare expected results
                     $display("[Scoreboard] Record expected results of read-transaction");
                     read_result = new(MSG_EXPECTED_REPLY);
                     read_result.addr = read_op.addr;
-                    read_result.data = read_op.data;
+                    read_result.data = buffer[read_result.addr];
                     expected_result = read_result;
                 end
 
@@ -79,12 +81,15 @@ class tb_scoreboard;
                         continue;
                     end
                     
-                    // record expected results
+                    // prepare expected results
                     $display("[Scoreboard] Record expected results of write-transaction");
                     write_result = new(MSG_EXPECTED_REPLY);
                     write_result.addr = write_op.addr;
                     write_result.data = write_op.data;
                     expected_result = write_result;
+
+                    // write to buffer
+                    buffer[write_result.addr] = write_result.data;
                 end
 
                 MSG_DONE_ALL: begin

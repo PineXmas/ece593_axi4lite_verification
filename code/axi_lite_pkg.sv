@@ -14,6 +14,8 @@ package axi_lite_pkg;
 	typedef logic [STRB_WIDTH - 1 : 0] strb_t;
 	typedef logic [1 : 0] resp_t;
 
+	// buffer size, used in slave/scoreboard
+    parameter BUFFER_SIZE = 32;
 
 	// Read Address Channel
 	typedef struct packed {

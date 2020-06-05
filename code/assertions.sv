@@ -1,3 +1,16 @@
+/*
+
+**************************************************
+ECE593 - Fundamentals of Pre-Silicon Verification
+Project 7
+Team: Shubhanka, Supraj & Thong
+**************************************************
+
+This file defines assertions used to double-check
+the correctness of our testbench
+
+*/
+
 /**************** Assertions *******************/
 
 `include"axi_lite_if.sv"
