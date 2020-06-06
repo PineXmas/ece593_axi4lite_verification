@@ -85,6 +85,7 @@ class tb_environment;
         $display("Error count = %0d/%0d", checker_01.n_errors, checker_01.n_tests);
         $display("Reads       = %0d", checker_01.n_reads);
         $display("Writes      = %0d", checker_01.n_writes);
+        $display("Coverage    = %0.2f %%", coverage.axi_cover.get_inst_coverage());
     endfunction
 
     // Parse command line for test file path & return
