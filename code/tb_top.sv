@@ -10,6 +10,7 @@ This file defines the top module for our AXI4-Lite verification testbench
 
 */
 
+`include "assertions.sv"
 import tb_pkg::*;
 
 module tb_top;
@@ -52,4 +53,8 @@ module tb_top;
         $display("***********************************");
         $stop();
     end
+
+    // bind the assert to the DUT
+    bind axi_lite_dut axi_lite_Assertions axilite_assertion(bfm.aclk, bfm.areset_n, bfm.axi_if);
+
 endmodule

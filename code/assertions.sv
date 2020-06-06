@@ -15,7 +15,7 @@ the correctness of our testbench
 
 `include"axi_lite_if.sv"
 
-module axi__lite_Assertions(
+module axi_lite_Assertions(
 input	logic	aclk,
 input	logic	areset_n,
 	
@@ -56,7 +56,6 @@ endproperty
 
 
 AXI4_araddr_stable_a: assert property (AXI4_araddr_stable_p);
-AXI4_arvalid_arready_a: assert property (AXI4_arvalid_arready_p);
 AXI4_arvalid_arready_a: assert property (AXI4_arvalid_arready_p);
 AXI4_araddr_unknown_a: assert property (AXI4_araddr_unknown_p);
 
@@ -101,7 +100,7 @@ AXI4_rdata_unknown_a: assert property (AXI4_rdata_unknown_p);
 
 // To check awaddr remain stable when awvalid is asserted and awready is low.
 
-property AXI4_awaddre_stable_p;
+property AXI4_awaddr_stable_p;
 @(posedge aclk)	
 		(axi_if.awvalid && !axi_if.awready)|=> ($stable(axi_if.awaddr)); 
 		
