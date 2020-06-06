@@ -31,6 +31,11 @@ class tb_environment;
     tb_scoreboard scoreboard;   // scoreboard
     tb_coverage coverage;       // coverage
 
+    // command line arguments
+    string file_path;           // input file path
+    bit is_inject_reset;        // flag for randomly injecting reset signal
+    bit is_inject_start;        // flag for randomly injecting start signal
+
     // **************************************************
     // METHODS
     // **************************************************
@@ -38,17 +43,19 @@ class tb_environment;
     // Constructor
     function new(virtual tb_bfm bfm);
         this.bfm = bfm;
+
+        this.file_path = "";
+        this.is_inject_reset = 0;
+        this.is_inject_start = 0;
     endfunction
 
     // Build all components
     task build();
-        // declarations
-        string file_path;       // input file path
 
         $display("Testbench starts building");
 
-        // parse input file path
-        file_path = parse_test_file_path();
+        // parse arguments
+        parse_cmd_arguments();
         if (file_path.len() <= 0) begin
             $fatal("INPUT_NOT_FOUND", "Input file not provided.");
         end
@@ -60,7 +67,7 @@ class tb_environment;
         generator = new(bfm, monitor.monitor2generator, monitor.generator2monitor, file_path);
         $display("    - Generator built");
 
-        driver = new(bfm, monitor.monitor2driver, monitor.driver2monitor);
+        driver = new(bfm, monitor.monitor2driver, monitor.driver2monitor, is_inject_reset, is_inject_start);
         $display("    - Driver built");
 
         checker_01 = new(bfm, monitor.monitor2checker, monitor.checker2monitor);
@@ -92,6 +99,31 @@ class tb_environment;
         end
 
         parse_test_file_path = file_path;
+    endfunction
+
+    // Parse arguments in the command line if present
+    function void parse_cmd_arguments();
+
+        // input file path
+        if ($value$plusargs ("file=%s", file_path)) begin
+            // do nothing since success
+        end
+        else begin
+            file_path = "";
+        end
+
+        // inject reset
+        is_inject_reset = 0;
+        if ($test$plusargs ("inject_reset")) begin
+            is_inject_reset = 1;
+        end
+
+        // inject start
+        is_inject_start = 0;
+        if ($test$plusargs ("inject_start")) begin
+            is_inject_start = 1;
+        end
+
     endfunction
 
     // Start the whole testbench

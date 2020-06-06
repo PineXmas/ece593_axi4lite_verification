@@ -7,7 +7,8 @@ Team: Shubhanka, Supraj & Thong
 **************************************************
 
 This file defines all constants/parameters/types
-that are commonly used in our testbench
+that are commonly used in our testbench. This file
+also plays the role of a "config" class.
 
 */
 
@@ -20,6 +21,9 @@ package tb_pkg;
     // write transaction (RANDOM)
     parameter AWADDR_RAND_MIN = 32'd0;
     parameter AWADDR_RAND_MAX = 32'd32;
+
+    // max cycle checker wait for results, to prevent forever waiting 
+    parameter CHECKER_WAIT_MAX = 50;
 
     // type of messages exchanged between the components (via the mailbox)
     typedef enum {

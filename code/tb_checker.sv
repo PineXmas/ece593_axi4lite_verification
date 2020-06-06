@@ -94,9 +94,9 @@ class tb_checker;
 
                     // wait until read result is available
                     $display("[Checker] Check done-signal of read-transaction");
-                    @ (bfm.axi_if.arvalid && bfm.axi_if.arready);
+                    repeat (CHECKER_WAIT_MAX) @ (negedge bfm.aclk) if (bfm.axi_if.arvalid && bfm.axi_if.arready) break;
                     araddr = bfm.axi_if.araddr;
-                    @ (bfm.axi_if.rvalid && bfm.axi_if.rready);
+                    repeat (CHECKER_WAIT_MAX) @ (negedge bfm.aclk) if (bfm.axi_if.rvalid && bfm.axi_if.rready) break;
                     rdata = bfm.axi_if.rdata;
 
                     // check with scoreboard's results
@@ -108,7 +108,7 @@ class tb_checker;
                     end
 
                     // wait until transaction done & send to monitor
-                    @ ((~bfm.axi_if.rvalid) && (~bfm.axi_if.rready));
+                    repeat (CHECKER_WAIT_MAX) @ (negedge bfm.aclk) if ((~bfm.axi_if.rvalid) && (~bfm.axi_if.rready)) break;
                     repeat (2) @ (negedge bfm.aclk);
                     $display("[Checker] send done to monitor");
                     checker2monitor.put(msg_done);
@@ -136,9 +136,9 @@ class tb_checker;
 
                     // wait until write result is available
                     $display("[Checker] Check done-signal of write-transaction");
-                    @ (bfm.axi_if.awvalid && bfm.axi_if.awready);
+                    repeat (CHECKER_WAIT_MAX) @ (negedge bfm.aclk) if (bfm.axi_if.awvalid && bfm.axi_if.awready) break;
                     awaddr = bfm.axi_if.awaddr;
-                    @ (bfm.axi_if.wvalid && bfm.axi_if.wready);
+                    repeat (CHECKER_WAIT_MAX) @ (negedge bfm.aclk) if (bfm.axi_if.wvalid && bfm.axi_if.wready) break;
                     wdata = bfm.axi_if.wdata;
 
                     // check with scoreboard's results
@@ -150,7 +150,7 @@ class tb_checker;
                     end
 
                     // wait until transaction done & send to monitor
-                    @ (bfm.axi_if.bvalid && bfm.axi_if.bready);
+                    repeat (CHECKER_WAIT_MAX) @ (negedge bfm.aclk) if (bfm.axi_if.bvalid && bfm.axi_if.bready) break;
                     repeat (2) @ (negedge bfm.aclk);
                     $display("[Checker] send done to monitor");
                     checker2monitor.put(msg_done);
